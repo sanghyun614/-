@@ -141,7 +141,7 @@ Final_data_eng <- Final_data_eng %>% separate(Menu, c("Menu1", "Menu2"), sep="> 
 View(Final_data_eng[1:10,])
 write.csv(Final_data_eng, "CB_data_eng.csv", row.names=F)
 
-# Calculating Distance -----------------------------------------------------------------------------------------------------------------------------------
+# Calculating Distance ----------------------------------------------------------------------------------------------------------------
 
 library(data.table)
 library(dplyr)
@@ -174,8 +174,8 @@ for (i in 1:nrow(cb)) {
   print(i)
 }
 
-# Recommendation System  ---------------------------------------------------------------------------------------------------------------
-# CF Modeling --------------------------------------------------------------------------------------------------------------------------------------------
+# Recommendation System  --------------------------------------------------------------------------------------------------------------
+# CF Modeling -------------------------------------------------------------------------------------------------------------------------
 
 cf_data <- fread(file.choose())
 cf_data <- cf_data[complete.cases(cf_data),]
@@ -297,7 +297,7 @@ par(mfrow=c(1,2))
 plot(list_results, annotate = 1, legend = "topleft", main = "ROC curve")
 plot(list_results, "prec/rec", annotate = 1, legend = "bottomright", main = "Precision-Recall")
 
-# CB Modeling --------------------------------------------------------------------------------------------------------------------------------------------
+# CB Modeling -------------------------------------------------------------------------------------------------------------------------
 
 library(data.table)
 library(dplyr)
@@ -328,12 +328,14 @@ left_over_Restaurant <- cb_data$Name # 남은 식당의 이름
 
 cf_data_copy <- cf_data[cf_data$Restaurant %in% left_over_Restaurant, ] # CB에서 남은 식당만으로 CF 데이터 구축  
 
-Res_list_for_cb <- cf_data_copy %>% group_by(Restaurant) %>% summarize(count=n()) %>% filter(count > 5) %>% select(Restaurant) # 6번 이상 리뷰를 받은 식당
+Res_list_for_cb <- cf_data_copy %>% group_by(Restaurant) %>% summarize(count=n()) %>% filter(count > 5) %>% select(Restaurant) 
+# 6번 이상 리뷰를 받은 식당
 
 cf_data_copy2 <- cf_data_copy[cf_data_copy$Restaurant %in% Res_list_for_cb$Restaurant, ]
 
 ID_list_for_cb_eval <- cf_data_copy2 %>% group_by(ID) %>% summarize(count=n()) %>% filter(count > 6) # 6번 이상 리뷰한 애들
-Res_list_based_on_ID <- cf_data_copy2[cf_data_copy2$ID %in% ID_list_for_cb_eval$ID, ] %>% select(Restaurant) %>% unique # 6번 이상 리뷰한 애들이 간 식당
+Res_list_based_on_ID <- cf_data_copy2[cf_data_copy2$ID %in% ID_list_for_cb_eval$ID, ] %>% select(Restaurant) %>% unique 
+# 6번 이상 리뷰한 애들이 간 식당
 
 cf_data_final <- cf_data_copy2[cf_data_copy2$ID %in% ID_list_for_cb_eval$ID, ]
 
@@ -612,7 +614,7 @@ names(test_user_4) <- c('한상현 못생김','강지원 멍청이','전희연 �
 
 CB_simulation(test_user_4)
 
-# Evaluation --------------------------------------------------------------------------------------------------------------------------------------------
+# Evaluation --------------------------------------------------------------------------------------------------------------------------
 
 # CF data Carpentry
 cf_data <- fread("cf_data.csv") # nrow = 144544, ID = 8505, Restaurant = 17134
@@ -634,12 +636,14 @@ left_over_Restaurant <- cb_data$Name # 남은 식당의 이름
 
 cf_data_copy <- cf_data[cf_data$Restaurant %in% left_over_Restaurant, ] # CB에서 남은 식당만으로 CF 데이터 구축  
 
-Res_list_for_cb <- cf_data_copy %>% group_by(Restaurant) %>% summarize(count=n()) %>% filter(count > 5) %>% select(Restaurant) # 6번 이상 리뷰를 받은 식당
+Res_list_for_cb <- cf_data_copy %>% group_by(Restaurant) %>% summarize(count=n()) %>% filter(count > 5) %>% select(Restaurant) 
+# 6번 이상 리뷰를 받은 식당
 
 cf_data_copy2 <- cf_data_copy[cf_data_copy$Restaurant %in% Res_list_for_cb$Restaurant, ]
 
 ID_list_for_cb_eval <- cf_data_copy2 %>% group_by(ID) %>% summarize(count=n()) %>% filter(count > 6) # 6번 이상 리뷰한 애들
-Res_list_based_on_ID <- cf_data_copy2[cf_data_copy2$ID %in% ID_list_for_cb_eval$ID, ] %>% select(Restaurant) %>% unique # 6번 이상 리뷰한 애들이 간 식당
+Res_list_based_on_ID <- cf_data_copy2[cf_data_copy2$ID %in% ID_list_for_cb_eval$ID, ] %>% select(Restaurant) %>% unique 
+# 6번 이상 리뷰한 애들이 간 식당
 
 cf_data_final <- cf_data_copy2[cf_data_copy2$ID %in% ID_list_for_cb_eval$ID, ]
 
@@ -656,7 +660,7 @@ set.seed(9)
 traintestset <- evaluationScheme(r, method='split',train=0.8, given=6, goodRating=4, k=3) 
 IDlist_CF <- getData(traintestset , "known")@data@Dimnames[[1]]
 
-# UBCF version ------------------------------------------------------------------------------------------------------------------------------------
+# UBCF version ------------------------------------------------------------------------------------------------------------------------
 UBCF <- Recommender(getData(traintestset , "train"), method="UBCF", parameter="Cosine")
 
 UBCF_pred_rating <- predict(UBCF, getData(traintestset , "known"), type="ratings")
@@ -665,7 +669,7 @@ UBCF_pred_topNList <- predict(UBCF, getData(traintestset , "known"), type="topNL
 UBCF_E_rating <- calcPredictionAccuracy(UBCF_pred_rating, getData(traintestset , "unknown"), byUser=FALSE)
 UBCF_E_topNList <- calcPredictionAccuracy(UBCF_pred_topNList, getData(traintestset , "unknown"), byUser=FALSE, goodRating=4, given=6)
 
-# IBCF version------------------------------------------------------------------------------------------------------------------------------------
+# IBCF version-------------------------------------------------------------------------------------------------------------------------
 IBCF <- Recommender(getData(traintestset , "train"), method="IBCF", parameter="Cosine")
 
 IBCF_pred_rating <- predict(IBCF, getData(traintestset , "known"), type="ratings")
@@ -690,7 +694,7 @@ HCF_pred_rating <- (UBCF_rating_for_HCF + IBCF_rating_for_HCF) / 2
 HCF_E_rating <- calcPredictionAccuracy(as(HCF_pred_rating,"realRatingMatrix"), getData(traintestset, "unknown"))
 HCF_E_topNList <- calcPredictionAccuracy(HCF_pred_topNList, getData(traintestset , "unknown"), byUser=FALSE, goodRating=4, given=6)
 
-# CB ---------------------------------------------------------------------------------------------------------------------------------------
+# CB ----------------------------------------------------------------------------------------------------------------------------------
 
 cb_data_after_carpentry <- fread("cb_data_after_carpentry.csv")
 
@@ -800,7 +804,7 @@ CB_E_topNList <- colMeans(CB_E_topNList, na.rm=TRUE)
 
 CB_E_topNList
 
-# CB+UBCF------------------------------------------------------------------------------------------------------------------------------------
+# CB+UBCF------------------------------------------------------------------------------------------------------------------------------
 
 CBUBCF_pred <- (eval_frame + UBCF_rating_for_HCF) / 2
 
@@ -846,7 +850,7 @@ CBUBCF_E_topNList <- colMeans(CBUBCF_E_topNList, na.rm=TRUE)
 
 CBUBCF_E_topNList
 
-# CB+IBCF------------------------------------------------------------------------------------------------------------------------------------
+# CB+IBCF------------------------------------------------------------------------------------------------------------------------------
 
 IDlist_CF <- getData(traintestset , "known")@data@Dimnames[[1]]
 CBIBCF_pred <- (eval_frame + IBCF_rating_for_HCF) / 2
@@ -893,7 +897,7 @@ CBIBCF_E_topNList <- colMeans(CBIBCF_E_topNList, na.rm=TRUE)
 
 CBIBCF_E_topNList
 
-# IBCF + UBCF + CB------------------------------------------------------------------------------------------------------------------------------------
+# IBCF + UBCF + CB---------------------------------------------------------------------------------------------------------------------
 
 CBUIBCF_pred <- (eval_frame + UBCF_rating_for_HCF + IBCF_rating_for_HCF) / 3
 
@@ -937,7 +941,7 @@ CBUIBCF_E_topNList <- colMeans(CBUIBCF_E_topNList, na.rm=TRUE)
 
 CBUIBCF_E_topNList
 
-# Summarize Results ----------------------------------------------------------------------------------------------------------------------------
+# Summarize Results -------------------------------------------------------------------------------------------------------------------
 
 df <- data.frame(MAE = c(UBCF_E_rating[3], IBCF_E_rating[3], CB_E_rating[3], HCF_E_rating[3], CBUBCF_E_rating[3], CBIBCF_E_rating[3], CBUIBCF_E_rating[3]),
                  Precision = c(UBCF_E_topNList[5], IBCF_E_topNList[5], CB_E_topNList[5], HCF_E_topNList[5],
@@ -949,7 +953,7 @@ rownames(df) <- c("UBCF", "IBCF", "CB", "UBCF+IBCF", "UBCF+CB", "IBCF+CB", "UBCF
 
 df
 
-# Final simulation ------------------------------------------------------------------------------------------------------------------------------------
+# Final simulation --------------------------------------------------------------------------------------------------------------------
 
 library(readr)
 library(tidyverse)
