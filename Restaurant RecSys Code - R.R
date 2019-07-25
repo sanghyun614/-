@@ -1,12 +1,11 @@
 # Matjib Recommendatin System
 
-# Data Carpentry ------------------------------------------------------------------------------------------------------------------------------------------
+# Data Carpentry ----------------------------------------------------------------------------------------------------------------------
 
 library(data.table)
 library(tidyverse)
 library(Matrix)
 library(recommenderlab)
-
 
 # CF data Carpentry
 cf_data <- fread("cf_data.csv") # nrow = 144544, ID = 8505, Restaurant = 17134
@@ -33,12 +32,14 @@ left_over_Restaurant <- cb_data$Name # 남은 식당의 이름
 
 cf_data_copy <- cf_data[cf_data$Restaurant %in% left_over_Restaurant, ] # CB에서 남은 식당만으로 CF 데이터 구축  
 
-Res_list_for_cb <- cf_data_copy %>% group_by(Restaurant) %>% summarize(count=n()) %>% filter(count > 5) %>% select(Restaurant) # 6번 이상 리뷰를 받은 식당
+Res_list_for_cb <- cf_data_copy %>% group_by(Restaurant) %>% summarize(count=n()) %>% filter(count > 5) %>% select(Restaurant) 
+# 6번 이상 리뷰를 받은 식당
 
 cf_data_copy2 <- cf_data_copy[cf_data_copy$Restaurant %in% Res_list_for_cb$Restaurant, ]
 
 ID_list_for_cb_eval <- cf_data_copy2 %>% group_by(ID) %>% summarize(count=n()) %>% filter(count > 6) # 6번 이상 리뷰한 애들
-Res_list_based_on_ID <- cf_data_copy2[cf_data_copy2$ID %in% ID_list_for_cb_eval$ID, ] %>% select(Restaurant) %>% unique # 6번 이상 리뷰한 애들이 간 식당
+Res_list_based_on_ID <- cf_data_copy2[cf_data_copy2$ID %in% ID_list_for_cb_eval$ID, ] %>% select(Restaurant) %>% unique 
+# 6번 이상 리뷰한 애들이 간 식당
 
 cf_data_final <- cf_data_copy2[cf_data_copy2$ID %in% ID_list_for_cb_eval$ID, ]
 
@@ -46,7 +47,7 @@ cb_data <- cb_data[cb_data$Name %in% Res_list_based_on_ID$Restaurant, ] # 6번 �
 
 write.csv(cb_data, "cb_data_after_carpentry.csv", row.names=F)
 
-# CB Text Mining ------------------------------------------------------------------------------------------------------------------------------------------
+## CB Text Mining
 
 library(slam)
 library(data.table)
@@ -70,7 +71,6 @@ relist_name <- relist$Name
 cb_data_3 <- cb_data_3[cb_data_3$Name %in% relist_name, ]
 
 # Text Wrangling
-
 about<-cb_data_3$About
 length(about)
 
@@ -174,6 +174,7 @@ for (i in 1:nrow(cb)) {
   print(i)
 }
 
+# Recommendation System  ---------------------------------------------------------------------------------------------------------------
 # CF Modeling --------------------------------------------------------------------------------------------------------------------------------------------
 
 cf_data <- fread(file.choose())
