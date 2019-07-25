@@ -678,7 +678,7 @@ IBCF_pred_topNList <- predict(IBCF, getData(traintestset , "known"), type="topNL
 IBCF_E_rating <- calcPredictionAccuracy(IBCF_pred_rating, getData(traintestset , "unknown"))
 IBCF_E_topNList <- calcPredictionAccuracy(IBCF_pred_topNList, getData(traintestset , "unknown"), byUser=FALSE, goodRating=4, given=6)
 
-# IBCF + UBCF------------------------------------------------------------------------------------------------------------------------------------
+# IBCF + UBCF--------------------------------------------------------------------------------------------------------------------------
 HCF <- HybridRecommender(UBCF, IBCF)
 
 HCF_pred_topNList <- predict(HCF, getData(traintestset , "known"), type="topNList")
@@ -943,7 +943,8 @@ CBUIBCF_E_topNList
 
 # Summarize Results -------------------------------------------------------------------------------------------------------------------
 
-df <- data.frame(MAE = c(UBCF_E_rating[3], IBCF_E_rating[3], CB_E_rating[3], HCF_E_rating[3], CBUBCF_E_rating[3], CBIBCF_E_rating[3], CBUIBCF_E_rating[3]),
+df <- data.frame(MAE = c(UBCF_E_rating[3], IBCF_E_rating[3], CB_E_rating[3], HCF_E_rating[3], 
+                         CBUBCF_E_rating[3], CBIBCF_E_rating[3], CBUIBCF_E_rating[3]),
                  Precision = c(UBCF_E_topNList[5], IBCF_E_topNList[5], CB_E_topNList[5], HCF_E_topNList[5],
                                CBUBCF_E_topNList[5], CBIBCF_E_topNList[5], CBUIBCF_E_topNList[5]),
                  Recall = c(UBCF_E_topNList[6], IBCF_E_topNList[6], CB_E_topNList[6], HCF_E_topNList[6],
